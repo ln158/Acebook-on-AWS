@@ -1,3 +1,5 @@
+[![Lina Grace Jay CI](https://github.com/ln158/Acebook-on-AWS/actions/workflows/ci.yml/badge.svg)](https://github.com/ln158/Acebook-on-AWS/actions/workflows/ci.yml)
+
 # Acebook
 
 This is a Node.js template for the Acebook engineering project.
@@ -14,7 +16,7 @@ It uses:
 
 ## Card wall
 
-REPLACE THIS TEXT WITH A LINK TO YOUR CARD WALL
+[Trello Board](https://trello.com/b/LEFXNnhW/acebook-aws-week-3)
 
 ## Quickstart
 
