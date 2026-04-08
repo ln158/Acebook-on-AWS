@@ -25,6 +25,39 @@ REPLACE THIS TEXT WITH A LINK TO YOUR CARD WALL
    brew install nvm
    ```
    Then follow the instructions to update your `~/.bash_profile`.
+
+[comment by Jay]: Follow these steps to finish the installation:
+ 
+ => Create the working directory
+Run this in your terminal:
+
+```bash
+
+mkdir ~/.nvm
+```
+
+=> Update your Profile
+Since modern Macs use Zsh by default (not Bash), you likely need to update ~/.zshrc. 
+
+Open the file: nano ~/.zshrc
+    Paste these lines at the very bottom:
+    
+    export NVM_DIR="$HOME/.nvm"
+    [ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"
+    [ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"
+   
+
+Press Ctrl+O once done, then Enter to save. Press Ctrl+X to exit. 
+
+=> Refresh and Verify:
+Restart your terminal (or run source ~/.zshrc) and check if it works: 
+```bash
+
+nvm --version
+```
+** If you see a version number, you're good to go! You can proceed with nvm install 23 and the rest of your Quickstart guide.** 
+
+   ---
 2. Open a new terminal
 3. Install the latest version of [Node.js](https://nodejs.org/en/), currently 23.
    ```
@@ -41,6 +74,20 @@ REPLACE THIS TEXT WITH A LINK TO YOUR CARD WALL
    npm install
    ```
 5. Install an ESLint plugin for your editor. For example: [linter-eslint](https://github.com/AtomLinter/linter-eslint) for Atom.
+[Comment by Jay]: Slightly confusing here. Atom is a code editor but none of us using Atom for this project as far as i know. If you're using VS Code then Search for ESLint (published by Microsoft) and click Install.
+[Optional]: 
+Enable Auto-Fix on Save for ESLint:
+
+    Open your VS Code settings (Cmd + ,).
+    Search for "Code Actions On Save".
+    Click "Edit in settings.json" and add:
+   ```
+    "editor.codeActionsOnSave": {
+        "source.fixAll.eslint": true
+    }
+
+Thats it for step 5! Proced to the next step. 
+
 6. Install MongoDB
    ```
    brew tap mongodb/brew
