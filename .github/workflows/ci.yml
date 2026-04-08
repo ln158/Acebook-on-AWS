@@ -1,10 +1,9 @@
-name: Lina Grace Jay CI Pipeline
+name: Lina Grace Jay CI
 
 on:
   push:
     branches:
-      - main
-      - ci_test_jay
+      - "**"
 
 jobs:
   test:
@@ -28,8 +27,16 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Run all tests
-        run: npm test
-        env:
-          PORT: 3030
-          MONGODB_URL: mongodb://127.0.0.1:27017/acebook_test
+      - name: Run lint
+        run: npm run lint
+
+      - name: Run unit tests
+        run: npm run test:unit
+
+      - name: Run integration tests
+        uses: cypress-io/github-action@v6
+        with:
+          start: npm run start:test
+          wait-on: 'http://localhost:3030'
+          wait-on-timeout: 120
+          command: npm run test:integration
