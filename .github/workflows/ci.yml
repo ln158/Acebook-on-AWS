@@ -1,4 +1,4 @@
-name: Simple CI
+name: Lina Grace Jay CI Pipeline
 
 on:
   push:
