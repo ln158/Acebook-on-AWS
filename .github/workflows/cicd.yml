@@ -1,0 +1,81 @@
+name: Lina Grace Jay CI-CD
+
+on:
+  push:
+    branches:
+      - "**"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      mongodb:
+        image: mongo:6
+        ports:
+          - 27017:27017
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run lint
+        run: npm run lint
+
+      - name: Run unit tests
+        run: npm run test:unit
+
+      - name: Run integration tests
+        uses: cypress-io/github-action@v6
+        with:
+          start: npm run start:test
+          wait-on: 'http://localhost:3030'
+          wait-on-timeout: 120
+          command: npm run test:integration
+
+  cd:
+    name: Deploy to AWS
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Set deployment bundle name
+        run: echo "BUNDLE_NAME=revision-${GITHUB_SHA}.zip" >> $GITHUB_ENV
+
+      - name: Create deployment bundle
+        run: |
+          zip -r "$BUNDLE_NAME" . \
+            -x ".git/*" \
+               "node_modules/*" \
+               ".github/*"
+
+      - name: Upload revision to S3
+        run: |
+          aws s3 cp "$BUNDLE_NAME" s3://${{ secrets.AWS_S3_BUCKET }}/"$BUNDLE_NAME"
+
+      - name: Trigger CodeDeploy deployment
+        run: |
+          aws deploy create-deployment \
+            --application-name "${{ secrets.AWS_CODEDEPLOY_APP }}" \
+            --deployment-group-name "${{ secrets.AWS_CODEDEPLOY_GROUP }}" \
+            --deployment-config-name CodeDeployDefault.OneAtATime \
+            --s3-location bucket=${{ secrets.AWS_S3_BUCKET }},bundleType=zip,key=$BUNDLE_NAME
